@@ -1,0 +1,7 @@
+.env
+vendor/
+uploads/*
+!uploads/.gitkeep
+sites-clientes/*
+!sites-clientes/.gitkeep
+*.log

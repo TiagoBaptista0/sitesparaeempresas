@@ -1,0 +1,23 @@
+{
+    "name": "sitesparaempresas/plataforma",
+    "description": "Plataforma de criação de sites para empresas",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "mercadopago/dx-php": "^2.6",
+        "vlucas/phpdotenv": "^5.5",
+        "phpmailer/phpmailer": "^6.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

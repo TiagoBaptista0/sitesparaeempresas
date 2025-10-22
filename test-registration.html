@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Registration</title>
+</head>
+<body>
+    <h1>Test Registration</h1>
+    <form action="http://localhost:8000/api/cadastro.php" method="post">
+        <label for="nome">Name:</label>
+        <input type="text" id="nome" name="nome" value="Test User" required><br><br>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="test@example.com" required><br><br>
+        
+        <label for="telefone">Phone:</label>
+        <input type="text" id="telefone" name="telefone" value="(11) 99999-9999" required><br><br>
+        
+        <label for="senha">Password:</label>
+        <input type="password" id="senha" name="senha" value="TestPassword123!" required><br><br>
+        
+        <label for="confirmar_senha">Confirm Password:</label>
+        <input type="password" id="confirmar_senha" name="confirmar_senha" value="TestPassword123!" required><br><br>
+        
+        <label for="nome_empresa">Company Name:</label>
+        <input type="text" id="nome_empresa" name="nome_empresa" value="Test Company" required><br><br>
+        
+        <label for="ramo">Business Type:</label>
+        <input type="text" id="ramo" name="ramo" value="Technology" required><br><br>
+        
+        <label for="plano_id">Plan:</label>
+        <select id="plano_id" name="plano_id">
+            <option value="1">Basic</option>
+            <option value="2">Professional</option>
+            <option value="3">Premium</option>
+        </select><br><br>
+        
+        <label>
+            <input type="checkbox" name="termos" value="1" checked required>
+            I accept the terms and conditions
+        </label><br><br>
+        
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>
