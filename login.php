@@ -1,9 +1,10 @@
 <?php
 session_start();
 
-// Se já estiver logado, redireciona para o dashboard
+// Se já estiver logado, redireciona para o dashboard apropriado
 if (isset($_SESSION['usuario_id'])) {
-    header('Location: dashboard/index.php');
+    $redirect = $_SESSION['usuario_tipo'] === 'admin' ? 'admin/index.php' : 'dashboard/index.php';
+    header('Location: ' . $redirect);
     exit;
 }
 
