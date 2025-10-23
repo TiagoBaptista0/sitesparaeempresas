@@ -1,7 +1,35 @@
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# Composer
 vendor/
-uploads/*
-!uploads/.gitkeep
-sites-clientes/*
-!sites-clientes/.gitkeep
+composer.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads and temporary files
+uploads/
+sites-clientes/
+temp/
+tmp/
+
+# Test files (optional - remova se quiser versioná-los)
+test-*.php
+test-*.html
+
+# Logs
 *.log
+
+# MailHog
+MailHog.exe
