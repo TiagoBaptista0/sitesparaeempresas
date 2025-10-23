@@ -17,7 +17,19 @@ function verificarAdmin() {
     }
 }
 
-// Função para formatar data brasileira
+// Atalhos para as funções acima
+function is_logged() {
+    return isset($_SESSION['usuario_id']);
+}
+
+function is_admin() {
+    return isset($_SESSION['usuario_tipo']) && $_SESSION['usuario_tipo'] === 'admin';
+}
+
+function redirect($url) {
+    header('Location: ' . $url);
+    exit;
+}
 function formatarData($data) {
     if (!$data) return 'N/A';
     return date('d/m/Y', strtotime($data));
@@ -113,10 +125,38 @@ function enviarEmail($para, $assunto, $mensagem, $altBody = '') {
 function registrarLog($conn, $usuario_id, $acao, $descricao) {
     $ip = $_SERVER['REMOTE_ADDR'];
     $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-    
+
     $stmt = $conn->prepare("INSERT INTO logs (usuario_id, acao, descricao, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("issss", $usuario_id, $acao, $descricao, $ip, $user_agent);
     $stmt->execute();
     $stmt->close();
+}
+
+// Função para fazer logout
+function logout_user() {
+    // Inicia sessão se não estiver iniciada para garantir que possamos limpar dados
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Registra ação de logout, se desejar (exemplo)
+    // if (isset($_SESSION['usuario_id'])) {
+    //     registrarLog($conn, $_SESSION['usuario_id'], 'logout', 'Usuário efetuou logout');
+    // }
+
+    // Remove todas as variáveis de sessão
+    $_SESSION = array();
+
+    // Apaga cookie de sessão se existir
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+            $params["path"], $params["domain"],
+            $params["secure"], $params["httponly"]
+        );
+    }
+
+    // Finalmente destrói a sessão
+    session_destroy();
 }
 ?>
