@@ -7,10 +7,10 @@ if (!is_logged() || !is_admin()) {
 }
 
 $cliente_id = (int)($_POST['cliente_id'] ?? 0);
-$status = sanitize($_POST['status'] ?? '');
+$status = sanitizar($_POST['status'] ?? '');
 
 if (!$cliente_id || !$status) {
-    redirect('/admin/clientes.php');
+    redirect('/admin/cliente.php');
 }
 
 $stmt = $conn->prepare("UPDATE clientes SET status = ? WHERE id = ?");
