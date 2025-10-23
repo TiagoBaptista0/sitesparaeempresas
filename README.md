@@ -1,74 +1,102 @@
-# SitesParaEmpresas.com
+# Sites para Empresas
 
-Sistema completo de gestão de sites para empresas com integração Mercado Pago.
+Plataforma web para criação e gerenciamento de sites para pequenas e médias empresas.
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
-- Sistema de cadastro e login
-- 3 planos (Básico, Profissional, Premium)
-- Integração com Mercado Pago
-- Dashboard do cliente
-- Painel administrativo
-- Sistema de suporte
-- Gestão de pagamentos
-- Controle de status dos sites
+- ✅ Autenticação de usuários com email
+- ✅ Confirmação de email
+- ✅ Busca e verificação de domínios
+- ✅ Dashboard de usuário
+- ✅ Gerenciamento de planos e pagamentos
+- ✅ Suporte ao cliente
+- ✅ Painel administrativo
 
-## 📋 Requisitos
+## Tecnologias
+
+- **Backend**: PHP 7.4+
+- **Banco de Dados**: MySQL/MariaDB
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Email**: PHPMailer com SMTP
+- **Composer**: Gerenciamento de dependências
+
+## Instalação
+
+### Pré-requisitos
 
 - PHP 7.4 ou superior
-- MySQL 5.7 ou superior
+- MySQL/MariaDB
 - Composer
-- Conta no Mercado Pago
+- Git
 
-## 🔧 Instalação
+### Passos
 
-### 1. Instale as dependências
+1. Clone o repositório:
+```bash
+git clone https://github.com/TiagoBaptista0/sitesparaeempresas.git
+cd sitesparaeempresas
+```
+
+2. Instale as dependências:
+```bash
 composer install
+```
 
-### 2. Configure o banco de dados
+3. Configure o arquivo `.env`:
+```bash
+cp .env.example .env
+```
 
-Crie o banco de dados:
-CREATE DATABASE sitesparaeempresas;
+4. Configure o banco de dados em `config/db.php`
 
-Importe o schema:
-mysql -u root -p sitesparaeempresas < db/schema.sql
+5. Importe o schema do banco:
+```bash
+mysql -u seu_usuario -p seu_banco < db/schema.sql
+```
 
-### 3. Inicie o servidor
+6. Inicie o servidor:
+```bash
 php -S localhost:8000
+```
 
-### 4. Acesse o sistema
+## Estrutura do Projeto
 
-- Site: http://localhost:8000
-- Admin: http://localhost:8000/admin/
+```
+├── admin/              # Painel administrativo
+├── api/                # Endpoints da API
+├── assets/             # CSS, JS, imagens
+├── config/             # Configurações
+├── dashboard/          # Dashboard do usuário
+├── db/                 # Schema do banco de dados
+├── includes/           # Headers e footers
+├── uploads/            # Arquivos enviados
+├── vendor/             # Dependências Composer
+└── index.php           # Página inicial
+```
 
-Credenciais do Admin:
-- Email: admin@sitesparaempresas.com
-- Senha: password
+## Configuração de Email
 
-## 💳 Integração Mercado Pago
+O projeto usa PHPMailer para envio de emails. Configure as variáveis de ambiente:
 
-O sistema está configurado com suas credenciais de teste no arquivo .env
+```env
+MAIL_HOST=seu_smtp_host
+MAIL_PORT=587
+MAIL_USERNAME=seu_email
+MAIL_PASSWORD=sua_senha
+MAIL_FROM=noreply@seudominio.com
+```
 
-## 📧 E-mail Configurado
+## Contribuindo
 
-noreply@sitesparaempresas.com
+1. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+2. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+3. Push para a branch (`git push origin feature/AmazingFeature`)
+4. Abra um Pull Request
 
-## 🎯 Fluxo de Uso
+## Licença
 
-### Para Clientes:
-1. Cadastro: Cliente escolhe um plano e se cadastra
-2. Login: Acessa o dashboard
-3. Pagamento: Realiza o pagamento via Mercado Pago
-4. Aguarda: Admin entra em contato para criar o site
-5. Acompanha: Visualiza status do site no dashboard
+Este projeto está sob a licença MIT.
 
-### Para Admin:
-1. Login: Acessa o painel admin
-2. Visualiza: Lista de novos clientes
-3. Contata: Cliente via WhatsApp (link direto)
-4. Atualiza: Status do site conforme progresso
-5. Gerencia: Pagamentos e suporte
+## Autor
 
-## 📄 Licença
-
-Todos os direitos reservados © 2024 SitesParaEmpresas.com
+Tiago Baptista - [@TiagoBaptista0](https://github.com/TiagoBaptista0)
