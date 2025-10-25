@@ -65,8 +65,10 @@ CREATE TABLE IF NOT EXISTS clientes (
     nome_empresa VARCHAR(100),
     ramo VARCHAR(100),
     dominio VARCHAR(100) UNIQUE,
-    status ENUM('aguardando_email', 'aguardando_dominio', 'ativo', 'inativo', 'cancelado') DEFAULT 'aguardando_email',
+    status ENUM('aguardando_email', 'aguardando_dominio', 'aguardando_pagamento', 'aguardando_dominio_registro', 'dominio_registrado', 'dns_configurado', 'ativo', 'inativo', 'cancelado') DEFAULT 'aguardando_email',
     plano_id INT,
+    namecheap_domain_id VARCHAR(50),
+    namecheap_order_id VARCHAR(50),
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE CASCADE,
@@ -81,7 +83,11 @@ CREATE TABLE IF NOT EXISTS pagamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     assinatura_id INT,
+    plano_id INT,
+    dominio VARCHAR(100),
     valor DECIMAL(10,2) NOT NULL,
+    valor_plano DECIMAL(10,2),
+    valor_dominio DECIMAL(10,2),
     status ENUM('pendente', 'aprovado', 'recusado', 'cancelado', 'estornado') DEFAULT 'pendente',
     metodo_pagamento VARCHAR(50),
     mercadopago_payment_id VARCHAR(100),
@@ -94,10 +100,12 @@ CREATE TABLE IF NOT EXISTS pagamentos (
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (assinatura_id) REFERENCES assinaturas(id) ON DELETE SET NULL,
+    FOREIGN KEY (plano_id) REFERENCES planos(id) ON DELETE SET NULL,
     INDEX idx_usuario (usuario_id),
     INDEX idx_status (status),
     INDEX idx_mercadopago (mercadopago_payment_id),
-    INDEX idx_data_pagamento (data_pagamento)
+    INDEX idx_data_pagamento (data_pagamento),
+    INDEX idx_dominio (dominio)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Tabela de confirmação de email

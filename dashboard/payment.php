@@ -10,7 +10,6 @@ if (!isset($_SESSION['usuario_id'])) {
 
 $usuario_id = $_SESSION['usuario_id'];
 
-// Validar dados do POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: domain-selection.php');
     exit;
@@ -27,7 +26,6 @@ if (!$plano_id || !$domain || $plano_price <= 0 || $domain_price < 0) {
     exit;
 }
 
-// Buscar informações do usuário
 $stmt = $conn->prepare("SELECT nome, email FROM usuarios WHERE id = ?");
 $stmt->bind_param("i", $usuario_id);
 $stmt->execute();
@@ -41,7 +39,6 @@ if (!$usuario) {
     exit;
 }
 
-// Configurar Mercado Pago
 $mp_access_token = getenv('MP_ACCESS_TOKEN') ?: (defined('MP_ACCESS_TOKEN') ? MP_ACCESS_TOKEN : null);
 if (!$mp_access_token) {
     die('Erro: Token do Mercado Pago não configurado');
@@ -49,7 +46,6 @@ if (!$mp_access_token) {
 
 \MercadoPago\SDK::setAccessToken($mp_access_token);
 
-// Criar itens do pedido
 $item1 = new \MercadoPago\Item();
 $item1->title = "Plano - Primeiro mês";
 $item1->quantity = 1;
@@ -60,11 +56,9 @@ $item2->title = "Registro de domínio (1 ano) - " . $domain;
 $item2->quantity = 1;
 $item2->unit_price = (float)$domain_price;
 
-// Criar preferência
 $preference = new \MercadoPago\Preference();
 $preference->items = array($item1, $item2);
 
-// URLs de retorno
 $base_url = rtrim(getenv('BASE_URL') ?: 'http://localhost/sitesparaeempresas', '/');
 $preference->back_urls = [
     'success' => $base_url . '/dashboard/payment-success.php',
@@ -73,31 +67,42 @@ $preference->back_urls = [
 ];
 $preference->auto_return = 'approved';
 
-// Dados do pagador
 $payer = new \MercadoPago\Payer();
 $payer->email = $usuario['email'];
 $payer->name = $usuario['nome'];
 $preference->payer = $payer;
 
+// Configurar webhook URL para receber notificações
+$webhook_url = getenv('MERCADOPAGO_WEBHOOK_URL') ?: $base_url . '/api/mercadopago_webhook.php';
+$preference->notification_url = $webhook_url;
+$preference->external_reference = uniqid();
+
 try {
     $preference->save();
-    
-    // Salvar pedido no banco de dados
+
     $stmt = $conn->prepare("
-        INSERT INTO pedidos (usuario_id, plano_id, dominio, valor_plano, valor_dominio, valor_total, mercadopago_preference_id, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'pendente')
+        INSERT INTO pagamentos (usuario_id, plano_id, dominio, valor, valor_plano, valor_dominio, status, metodo_pagamento, descricao, mercadopago_preference_id, mercadopago_payment_id)
+        VALUES (?, ?, ?, ?, ?, ?, 'pendente', 'mercadopago', ?, ?, ?)
     ");
-    
-    if ($stmt) {
-        $stmt->bind_param("iisddds", $usuario_id, $plano_id, $domain, $plano_price, $domain_price, $total, $preference->id);
-        $stmt->execute();
-        $stmt->close();
-    }
-    
-    // Redirecionar para Mercado Pago
+
+    $descricao = "Plano + Domínio: " . $domain;
+    $stmt->bind_param("iisdddsss",
+        $usuario_id,
+        $plano_id,
+        $domain,
+        $total,
+        $plano_price,
+        $domain_price,
+        $descricao,
+        $preference->id,
+        $preference->init_point
+    );
+    $stmt->execute();
+    $stmt->close();
+
     header('Location: ' . $preference->init_point);
     exit;
-    
+
 } catch (Exception $e) {
     error_log("Erro ao criar preferência Mercado Pago: " . $e->getMessage());
     die('Erro ao processar pagamento. Tente novamente.');

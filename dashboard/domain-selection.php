@@ -366,8 +366,27 @@ document.getElementById('searchDomainBtn').addEventListener('click', async funct
     const domain = document.getElementById('domainInput').value.trim();
     const extension = document.getElementById('domainExtension').value;
 
+    // Validação básica
     if (!domain) {
         alert('Por favor, digite um nome de domínio');
+        return;
+    }
+
+    // Validar comprimento do domínio
+    if (domain.length < 2 || domain.length > 63) {
+        alert('O nome do domínio deve ter entre 2 e 63 caracteres');
+        return;
+    }
+
+    // Validar caracteres permitidos (apenas letras, números e hífen)
+    if (!/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/i.test(domain)) {
+        alert('O domínio pode conter apenas letras, números e hífen (não pode começar ou terminar com hífen)');
+        return;
+    }
+
+    // Validar se não tem hífen consecutivo
+    if (domain.includes('--')) {
+        alert('O domínio não pode conter hífens consecutivos');
         return;
     }
 
@@ -385,7 +404,18 @@ document.getElementById('searchDomainBtn').addEventListener('click', async funct
             body: JSON.stringify({ domain: fullDomain })
         });
 
+        if (!response.ok) {
+            throw new Error('Erro ao verificar domínio');
+        }
+
         const data = await response.json();
+
+        if (data.error) {
+            statusDiv.textContent = '✗ ' + data.error;
+            statusDiv.className = 'domain-status unavailable';
+            document.getElementById('domainPrice').style.display = 'none';
+            return;
+        }
 
         if (data.available) {
             statusDiv.textContent = '✓ Domínio disponível!';
@@ -393,13 +423,18 @@ document.getElementById('searchDomainBtn').addEventListener('click', async funct
             document.getElementById('domainPrice').textContent = 'R$ ' + parseFloat(data.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' por ano';
             document.getElementById('domainPrice').style.display = 'block';
 
+            // Mostrar aviso se usando fallback
+            if (data.source === 'fallback') {
+                console.warn('Aviso: Usando verificação offline. Configure credenciais Namecheap para verificação em tempo real.');
+            }
+
             selectedDomain = fullDomain;
             selectedDomainPrice = data.price;
 
             document.getElementById('selectedDomainName').textContent = fullDomain;
             document.getElementById('selectedDomainPrice').textContent = 'R$ ' + parseFloat(data.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + ' por ano';
 
-            // Show confirm form
+            // Mostrar formulário de confirmação
             if (selectedPlan) {
                 const total = parseFloat(selectedPlan.price) + parseFloat(selectedDomainPrice);
                 document.getElementById('formPlanId').value = selectedPlan.id;
@@ -415,8 +450,10 @@ document.getElementById('searchDomainBtn').addEventListener('click', async funct
             document.getElementById('domainPrice').style.display = 'none';
         }
     } catch (error) {
+        console.error('Erro:', error);
         statusDiv.textContent = 'Erro ao verificar domínio. Tente novamente.';
         statusDiv.className = 'domain-status unavailable';
+        document.getElementById('domainPrice').style.display = 'none';
     }
 });
 </script>

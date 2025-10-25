@@ -6,6 +6,12 @@ require_once '../vendor/autoload.php';
 $mp_access_token = $_ENV['MP_ACCESS_TOKEN'] ?? 'TEST-2235218074018734-101521-e81d1e6f8f3e4c4e0f5e5e5e5e5e5e5e-191014229';
 \MercadoPago\SDK::setAccessToken($mp_access_token);
 
+// Configurar SSL para ngrok
+$cacert_path = $_ENV['CACERT_PATH'] ?? 'C:/wamp64/bin/php/php8.3.14/cacert.pem';
+if (file_exists($cacert_path)) {
+    \MercadoPago\SDK::setSSLVerification($cacert_path);
+}
+
 $plano_price = floatval($_POST['plano_price']);
 $domain_price = floatval($_POST['domain_price']);
 
@@ -28,14 +34,18 @@ $item2->unit_price = (float)$domain_price;
 $preference = new \MercadoPago\Preference();
 $preference->items = array($item1, $item2);
 
-// URLs de retorno usando BASE_URL do ambiente
-$base_url = rtrim($_ENV['BASE_URL'] ?? 'https://sitesparaempresas.com', '/');
+// URLs de retorno usando ngrok
+$ngrok_url = $_ENV['NGROK_URL'] ?? 'https://julian-interprotoplasmic-lanette.ngrok-free.dev';
+$base_url = rtrim($ngrok_url, '/');
 $preference->back_urls = [
-    'success' => $base_url . '/dashboard/pagamento-sucesso.php',
-    'failure' => $base_url . '/dashboard/pagamento-erro.php',
-    'pending' => $base_url . '/dashboard/pagamento-pendente.php',
+    'success' => $base_url . '/sitesparaeempresas/dashboard/payment-success.php',
+    'failure' => $base_url . '/sitesparaeempresas/dashboard/payment-error.php',
+    'pending' => $base_url . '/sitesparaeempresas/dashboard/payment-error.php',
 ];
 $preference->auto_return = 'approved';
+
+// Webhook URL
+$preference->notification_url = $ngrok_url . '/sitesparaeempresas/api/mercadopago_webhook.php';
 
 try {
     $preference->save();

@@ -159,4 +159,32 @@ function logout_user() {
     // Finalmente destrói a sessão
     session_destroy();
 }
+
+// Função para enviar email
+function sendEmail($to, $subject, $body) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+
+    $mail = new \PHPMailer\PHPMailer\PHPMailer();
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = SMTP_HOST;
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USERNAME;
+        $mail->Password = SMTP_PASSWORD;
+        $mail->SMTPSecure = SMTP_ENCRYPTION;
+        $mail->Port = SMTP_PORT;
+
+        $mail->setFrom(EMAIL_FROM, EMAIL_NAME);
+        $mail->addAddress($to);
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+
+        return $mail->send();
+    } catch (Exception $e) {
+        error_log("Erro ao enviar email: " . $e->getMessage());
+        return false;
+    }
+}
 ?>
